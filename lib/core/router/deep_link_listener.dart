@@ -73,7 +73,7 @@ class _DeepLinkListenerState extends ConsumerState<DeepLinkListener> {
         widgetRoute,
         replace: true,
         // 홈의 '코스 추천받기' 와 같이 처음부터 — 지난 선택이 남지 않게
-        before: widgetRoute == AppRoutes.wizardDateGate
+        before: widgetRoute == AppRoutes.wizardOrigin
             ? () => ref.read(courseWizardProvider.notifier).reset()
             : null,
       );

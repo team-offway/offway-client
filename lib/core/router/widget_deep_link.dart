@@ -8,7 +8,7 @@ import 'app_router.dart';
 /// |---|---|---|
 /// | `offway://course/{savedId}` | 보여주던 여행 | 코스 상세 |
 /// | `offway://course/{savedId}?day=2` | 여행 중 — 2일차를 보여주던 중 | 코스 상세, 2일차 탭 |
-/// | `offway://wizard` | 예정 여행 없음 | 코스 만들기(위저드 처음부터) |
+/// | `offway://wizard` | 예정 여행 없음 | 코스 만들기 — 홈 '코스 추천받기' 와 같은 출발지(1/5)부터 |
 /// | `offway://home` | 로그인 전 | 홈 — 스플래시가 로그인 여부로 첫 화면을 정한다 |
 ///
 /// 우리 스킴이 아니면 null — 공유 링크(`shareToken`)는 따로 푼다.
@@ -40,7 +40,9 @@ String? widgetDeepLinkRoute(Uri uri, {bool signedIn = true}) {
               day: day != null && day >= 1 ? day : null,
             );
     case 'wizard':
-      return AppRoutes.wizardDateGate;
+      // 출발지(1/5)가 첫 단계다(#345). 예전 첫 화면인 날짜로 보내면 2/5 에서
+      // 시작해, 출발지 없이 추천을 받게 된다
+      return AppRoutes.wizardOrigin;
     default:
       return AppRoutes.home;
   }

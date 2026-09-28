@@ -47,10 +47,11 @@ void main() {
     }
   });
 
-  test('예정 여행이 없으면 코스 만들기로', () {
+  test('예정 여행이 없으면 코스 만들기 첫 단계(출발지 1/5)로', () {
+    // 날짜(2/5)로 보내면 출발지를 건너뛴다 — 홈 '코스 추천받기' 와 같은 곳
     expect(
       widgetDeepLinkRoute(Uri.parse('offway://wizard')),
-      AppRoutes.wizardDateGate,
+      AppRoutes.wizardOrigin,
     );
   });
 
@@ -99,7 +100,7 @@ void main() {
       // 늘 막으면 위젯이 아무 데도 못 보내는 것과 같다
       expect(
         widgetDeepLinkRoute(Uri.parse('offway://wizard'), signedIn: true),
-        AppRoutes.wizardDateGate,
+        AppRoutes.wizardOrigin,
       );
     });
   });

@@ -6,7 +6,7 @@ import 'package:offway/core/router/app_router.dart';
 import 'package:offway/core/theme/app_theme.dart';
 import 'package:offway/core/widgets/app_back_button.dart';
 import 'package:offway/features/course/presentation/saved_course_screen.dart';
-import 'package:offway/features/course_wizard/presentation/date_gate_screen.dart';
+import 'package:offway/features/course_wizard/presentation/origin_screen.dart';
 import 'package:offway/features/course/application/course_providers.dart';
 
 /// 위젯·공유 링크로 **바로 들어온** 화면의 뒤로가기 (#304 후속).
@@ -90,15 +90,15 @@ void main() {
     addTearDown(tester.view.reset);
 
     final router = GoRouter(
-      initialLocation: AppRoutes.wizardDateGate,
+      initialLocation: AppRoutes.wizardOrigin,
       routes: [
         GoRoute(
           path: AppRoutes.home,
           builder: (_, _) => const Scaffold(body: Text('홈')),
         ),
         GoRoute(
-          path: AppRoutes.wizardDateGate,
-          builder: (_, _) => const DateGateScreen(),
+          path: AppRoutes.wizardOrigin,
+          builder: (_, _) => const OriginScreen(),
         ),
       ],
     );

@@ -35,6 +35,7 @@ import 'package:offway/features/region/presentation/region_list_screen.dart';
 import 'package:offway/features/region/presentation/widgets/leave_pick_card.dart';
 import 'package:offway/mock/mock_data_source.dart';
 import 'package:offway/core/network/image_cache.dart';
+import 'package:offway/core/widgets/place_thumbnail.dart';
 
 /// Keychain 삭제가 실패하는 상황을 재현하는 저장소
 class _FailingSecureStoragePlatform extends TestFlutterSecureStoragePlatform {
@@ -395,6 +396,9 @@ final _serverOverrides = [
   // 홈이 첫 화면 사진을 미리 받는다 — 테스트에서는 네트워크 없이 바로
   // 끝낸다. 실제 캐시를 쓰면 받기가 끝나지 않아 3초 제한 타이머가 남는다
   imagePrefetcherProvider.overrideWithValue((_) async {}),
+  // 홈으로 넘어가기 전 첫 사진을 메모리에 푼다 — 실제로 풀면 디스크 캐시가
+  // 열리며 캐시 폴더를 찾다 테스트가 끝난 뒤 예외가 난다
+  placeThumbnailPrecacheProvider.overrideWithValue((_, _, _) async {}),
   // 이 파일의 테스트는 로그인 화면부터 시작하는 플로우를 본다. 앱의 실제 첫
   // 화면은 스플래시라 그대로 두면 스플래시 시간을 기다려야 하고, 테스트가 재는 것도
   // 스플래시가 아니다 — 초기 경로를 로그인으로 고정한다.

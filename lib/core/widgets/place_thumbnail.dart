@@ -1,9 +1,36 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../network/image_cache.dart';
 import '../theme/tokens/tokens.dart';
+
+/// [PlaceThumbnail] 이 [logicalWidth] 폭으로 그릴 [url] 을 **메모리에 풀어
+/// 둔다**. 끝나면(실패해도) 완료된다.
+///
+/// 디스크에 받아 둔 사진도 화면에 뜨려면 파일을 읽어 풀어야 해, 그 한두
+/// 프레임은 자리색만 보인다 — 처음 화면에서 사진이 한 박자 늦게 채워지는 게
+/// 이것이다. 카드와 **같은 키**([PlaceThumbnail.providerFor])로 풀어 두면 첫
+/// 프레임부터 그려진다.
+///
+/// 테스트는 이 provider 를 바꿔 끼운다 — 키를 만드는 것만으로 디스크 캐시가
+/// 열리며 캐시 폴더를 찾다 죽는다
+final placeThumbnailPrecacheProvider =
+    Provider<
+      Future<void> Function(
+        BuildContext context,
+        String url,
+        double logicalWidth,
+      )
+    >(
+      (ref) =>
+          (context, url, logicalWidth) => precacheImage(
+            PlaceThumbnail.providerFor(context, url, logicalWidth),
+            context,
+            onError: (_, _) {},
+          ),
+    );
 
 /// 장소 썸네일 — 이미지가 없거나 못 불러오면 회색 자리에 아이콘을 남긴다.
 ///
@@ -112,6 +139,22 @@ class PlaceThumbnail extends StatelessWidget {
       child: content,
     );
   }
+
+  /// 이 위젯이 [logicalWidth] 폭으로 [url] 을 그릴 때 쓰는 이미지 — 메모리
+  /// 캐시의 **키**다. `CachedNetworkImage` 가 안에서 만드는 것(주소 + 그리는
+  /// 폭까지 축소)과 같아야 한다. `decodeToFit` 을 끈 자리와는 키가 다르다.
+  ///
+  /// 이 키로 미리 풀어 두면([placeThumbnailPrecacheProvider]) 첫 프레임부터
+  /// 사진이 있다
+  static ImageProvider providerFor(
+    BuildContext context,
+    String url,
+    double logicalWidth,
+  ) => ResizeImage.resizeIfNeeded(
+    decodeWidthFor(context, logicalWidth),
+    null,
+    CachedNetworkImageProvider(url, cacheManager: appImageCacheManager),
+  );
 
   /// 이 폭(논리 px)으로 그릴 이미지를 몇 픽셀까지 디코드할지.
   ///

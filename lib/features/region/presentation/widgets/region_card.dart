@@ -37,6 +37,15 @@ class RegionCard extends StatelessWidget {
   /// 홈 가로 리스트에서 쓰는 고정 폭
   static const boxedWidth = 152.0;
 
+  /// 사진이 테두리 안쪽으로 들어가는 여백 — 사방 1
+  static const _imageInset = 1.0;
+
+  /// 홈 카드 **사진**의 폭. 카드 폭에서 테두리 안쪽 여백을 뺀 값이다.
+  ///
+  /// 첫 화면 사진을 미리 풀 때(`decodeHomeFirstImages`) 이 폭을 써야 한다 —
+  /// 카드 폭(152)으로 풀면 사진이 실제로 찾는 키(150)와 달라 헛일이 된다
+  static const boxedImageWidth = boxedWidth - _imageInset * 2;
+
   /// 텍스트·뱃지 영역의 기본 높이 (제목 1줄 + 설명 2줄 + 뱃지 + 간격).
   ///
   /// 설명은 두 줄까지 보여준다(시안) — 한 줄(18)을 더 잡아 둔다. 설명이
@@ -85,7 +94,7 @@ class RegionCard extends StatelessWidget {
               // 그려져 실효 곡률이 11이 된다. 그 1px 어긋난 자리에 사진이
               // 비쳐 모서리가 계단처럼 보인다. 안쪽 곡률(11)로 잘라 덮는다
               Padding(
-                padding: const EdgeInsets.all(1),
+                padding: const EdgeInsets.all(_imageInset),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
                   clipBehavior: Clip.antiAliasWithSaveLayer,

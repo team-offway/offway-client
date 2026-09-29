@@ -10,6 +10,7 @@ import '../../../core/theme/tokens/tokens.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../data/leave_repository.dart';
 import '../../home/application/home_providers.dart';
+import '../../home/presentation/home_first_images.dart';
 
 /// O-02 · 잔여연차 입력 (온보딩)
 /// 시작하기를 누르면 서버에 총 연차를 저장하고 홈으로 이동한다.
@@ -117,7 +118,11 @@ class _LeaveInputScreenState extends ConsumerState<LeaveInputScreen> {
       // 뿐이라, 곧장 가면 홈이 아직 연차가 없는 상태를 보고 온보딩으로
       // 되돌려 보낸다(같은 화면을 두 번 입력하게 된다)
       ref.invalidate(homeSnapshotProvider);
-      await ref.read(homeSnapshotProvider.future);
+      final snapshot = await ref.read(homeSnapshotProvider.future);
+      if (!mounted) return;
+      // 처음 쓰는 사람의 첫 홈이다 — 첫 화면 사진을 풀어 두고 넘어가야
+      // 카드가 빈 채로 떴다가 채워지지 않는다(길어야 0.4초)
+      await decodeHomeFirstImages(context, ref, snapshot);
       if (mounted) context.go(AppRoutes.home);
     } on ApiException catch (e) {
       // 저장 없이 홈으로 보내면 연차가 0으로 보여 더 혼란스럽다 — 머물러 알린다

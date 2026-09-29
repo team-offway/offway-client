@@ -27,6 +27,6 @@ Future<void> decodeHomeFirstImages(
   final precache = ref.read(placeThumbnailPrecacheProvider);
   return Future.wait([
     for (final url in homeFirstImageUrls(snapshot, count: _visibleCards))
-      precache(context, url, RegionCard.boxedWidth),
+      precache(context, url, RegionCard.boxedImageWidth),
   ]).then<void>((_) {}).timeout(timeout, onTimeout: () {});
 }

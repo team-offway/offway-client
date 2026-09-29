@@ -1,7 +1,7 @@
 name: offway
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.1.1+43
+version: 1.1.2+44
 
 environment:
   sdk: ^3.10.3

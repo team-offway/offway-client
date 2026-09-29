@@ -78,6 +78,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<!-- 앱은 위치를 쓰지 않는다(#345) — 권한을 요청하는 코드가 없어 팝업도 뜨지 않는다.
+	     그래도 문구는 있어야 한다: 네이버 지도 SDK(NMapsMap·flutter_naver_map)가
+	     CLLocationManager 를 참조해, 없으면 App Store 검증 90683 에 걸린다.
+	     #345 에서 GPS 와 함께 지웠다가 다시 걸렸다 — 지우지 말 것 -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Offway는 현재 위치를 사용하지 않습니다. 앱에 포함된 지도 기능 때문에 필요한 안내 문구입니다.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>코스 일정 이미지를 사진 앨범에 저장하기 위해 사용합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

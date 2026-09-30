@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,8 @@ import '../../../core/router/app_router.dart';
 import '../../../core/utils/leave_format.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../leave/data/leave_usages_provider.dart' show invalidateLeaveData;
+import '../../notification/application/notification_provider.dart'
+    show markTripAfterNotificationsRead;
 import '../application/pending_trip_provider.dart';
 import '../data/course_repository.dart';
 import '../data/trip_outcome_snooze_storage.dart';
@@ -119,6 +123,13 @@ mixin TripOutcomePrompt<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       // 그 밖의 실패는 다음 진입에 다시 묻게 두고 알리기만 한다
       showAppToast(context, e.detail.isEmpty ? '기록하지 못했어요' : e.detail);
       return;
+    }
+
+    // 같은 여행의 "다녀오셨나요?" 알림도 읽음으로 — 알림을 누르지 않고 홈에서
+    // 뜬 모달로 답하면 알림이 안 읽음으로 남았다. 알림을 눌러 들어왔으면 누를
+    // 때 이미 읽었다
+    if (notificationCourseId != trip.courseId) {
+      unawaited(markTripAfterNotificationsRead(ref, trip.courseId));
     }
 
     // 답을 받았으니 미룸 기록은 필요 없다

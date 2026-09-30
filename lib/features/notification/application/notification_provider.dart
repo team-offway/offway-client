@@ -83,3 +83,35 @@ class UnreadNotificationsBadge extends Notifier<bool> {
   /// 읽어 켜려 하면 그 사이 홈에 돌아온 사용자가 배지 없는 종을 본다.
   void markArrived() => state = true;
 }
+
+/// 여행 뒤 "다녀오셨나요?" 에 답한 **그 여행의 알림**을 읽음으로 바꾼다.
+///
+/// 모달은 알림을 누르지 않아도 홈·내 연차에 들어오면 저절로 뜬다. 그 길로 답하면
+/// 같은 여행의 "다녀오셨나요?" 알림이 안 읽음으로 남아, 이미 답한 여행인데
+/// 종에 점이 계속 떠 있었다. 서버에는 코스 단위 읽음 처리가 없어 최근 목록에서
+/// 그 여행(`courseId`)의 안 읽은 [NotificationType.tripAfter] 만 골라 하나씩
+/// 읽는다 — 한 여행에 알림은 하나라 보통 한 번이다. 최근 한 페이지만 본다:
+/// 방금 답한 여행의 알림은 늘 앞쪽에 있다.
+///
+/// **기다리기 전에 쥐어 둔다.** 모달을 닫고 화면을 떠나도 끝까지 간다.
+/// 실패는 삼킨다 — 읽음 표시가 남는 것뿐이고 알림함에서 누르면 읽힌다
+Future<void> markTripAfterNotificationsRead(WidgetRef ref, int courseId) async {
+  final repository = ref.read(notificationRepositoryProvider);
+  final badge = ref.read(hasUnreadNotificationsProvider.notifier);
+  try {
+    final feed = await repository.fetch();
+    int? unread;
+    for (final item in feed.notifications) {
+      if (item.read ||
+          item.type != NotificationType.tripAfter ||
+          item.courseId != courseId) {
+        continue;
+      }
+      unread = await repository.markRead(item.id);
+    }
+    // 읽은 게 있을 때만 맞춘다 — 서버가 센 남은 수다
+    if (unread != null) badge.setUnreadCount(unread);
+  } on Object {
+    // 읽음 표시가 남는 것뿐이다
+  }
+}

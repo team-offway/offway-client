@@ -27,8 +27,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   /// 워드마크가 눈에 남을 만큼만 머문다. 더 끌면 앱이 느려 보인다.
   ///
   /// 1.2초였다 — 네이티브 런치 화면까지 더하면 로고가 1.5초 넘게 떠 있었다.
-  /// 0.7초로 줄였다(#396)
-  static const _hold = Duration(milliseconds: 700);
+  /// 0.7초로 줄였다가(#396) 0.9초로 조정했다. 네이티브 런치 화면을 더하면
+  /// 대략 1.1~1.4초다. 이 동안 로그인한 사용자는 홈 데이터와 첫 화면 사진을
+  /// 뒤에서 받는다
+  static const _hold = Duration(milliseconds: 900);
 
   /// 워드마크 중심의 세로 위치(화면 높이 대비).
   ///

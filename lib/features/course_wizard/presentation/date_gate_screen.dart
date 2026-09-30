@@ -10,7 +10,7 @@ import '../application/course_wizard_provider.dart';
 import 'widgets/wizard_choice_step.dart';
 import 'widgets/wizard_option_button.dart';
 
-/// O-04-0 · 날짜 갈림길 (STEP 0)
+/// O-04-0 · 날짜 갈림길 (STEP 2/5)
 /// "가고싶은 날짜가 있어요" → 캘린더 / "아직 안 정했어요" → 기간스타일
 class DateGateScreen extends ConsumerWidget {
   const DateGateScreen({super.key});

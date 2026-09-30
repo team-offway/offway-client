@@ -16,7 +16,7 @@ import 'widgets/wizard_choice_step.dart';
 import '../../home/application/home_providers.dart';
 import '../../../core/utils/date_format.dart';
 
-/// O-04 · 기간스타일 (B 경로, STEP 2/4)
+/// O-04 · 기간스타일 (B 경로, STEP 3/5)
 /// 주말 포함/연차만 선택 시 바텀시트로 하위 선택을 받는다.
 class PeriodStyleScreen extends ConsumerWidget {
   const PeriodStyleScreen({super.key});

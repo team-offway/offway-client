@@ -669,7 +669,7 @@ void main() {
   });
 
   test('기능을 못 쓰는 기기에서는 잠금화면을 건드리지 않는다', () async {
-    // iOS 16.1 미만·안드로이드·사용자가 껐을 때
+    // iOS 16.1 미만·사용자가 껐을 때
     final service = _FakeService(available: false);
     final c = containerWith([card(id: '1', start: '2026-09-22')], service);
 
@@ -709,7 +709,7 @@ void main() {
     });
 
     test('위젯도 카드도 못 그리는 기기면 코스를 읽지 않는다', () async {
-      // iOS 16.1 미만·안드로이드 — 읽어도 쓸 데가 없다
+      // iOS 16.1 미만 — 읽어도 쓸 데가 없다
       final service = _FakeService(available: false, widgetAvailable: false);
       var reads = 0;
       final c = ProviderContainer(

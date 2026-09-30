@@ -58,8 +58,7 @@ class AppleAuthService {
   /// 이름·이메일은 **최초 로그인 1회만** 내려오므로, 서버가 이때 저장해야 한다.
   /// 재로그인 시에는 null이 오는 것이 정상.
   Future<AppleLoginResult> login() async {
-    // 웹/안드로이드는 WebAuthenticationOptions(리디렉션·콜백) 설정이 필요하다.
-    // iOS 전용 앱이라 지원하지 않으며, 확장 시 이 가드부터 걷어낼 것.
+    // iOS 전용 앱이다 — 그 밖의 플랫폼(테스트 환경 등)에서는 부르지 않는다
     if (!Platform.isIOS) throw const AppleLoginUnsupported();
     try {
       final credential = await SignInWithApple.getAppleIDCredential(

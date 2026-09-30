@@ -49,7 +49,7 @@ final poiDetailProvider = FutureProvider.autoDispose
           ref.watch(courseRepositoryProvider).poiDetail(contentId),
     );
 
-/// 위저드 조건(밀도·이동수단·기간)과 현재 위치로 코스를 생성한다.
+/// 위저드 조건(밀도·이동수단·기간)과 사용자가 고른 출발지로 코스를 생성한다.
 ///
 /// 여행 날짜·일수는 가용시간 계산(서버, 공휴일 반영)이 확정한 값을 쓰고,
 /// 계산에 실패했을 때만 로컬 추정으로 폴백한다.

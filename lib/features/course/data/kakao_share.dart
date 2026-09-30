@@ -34,11 +34,7 @@ abstract final class KakaoShare {
     final webLink = Link(webUrl: url, mobileWebUrl: url);
 
     // 파라미터가 있으면 앱을 열고, 안 깔린 기기에서는
-    // 카카오 콘솔에 등록한 마켓(App Store·Play)으로 보낸다.
-    //
-    // TODO(android): 지금은 iOS만 받는다. Android는 카카오 키 설정 자체가 없어
-    // (build.gradle.kts·매니페스트 모두) 이 링크가 앱으로 돌아오지 못한다.
-    // Android를 붙일 때 kakao{앱키}://kakaolink VIEW intent-filter를 함께 넣을 것
+    // 카카오 콘솔에 등록한 마켓(App Store)으로 보낸다.
     final appLink = Link(
       webUrl: url,
       mobileWebUrl: url,

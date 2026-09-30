@@ -122,7 +122,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   /// '이번 연차엔 여기 어때요?' 카드 개수 — 시안 노트: 최소 3 ~ 최대 7
   static const _minLeavePicks = 3;
-  static const _maxLeavePicks = 7;
 
   /// 지역 카드 아래에서 '이번 연차엔' 제목까지.
   ///
@@ -550,7 +549,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   /// 시안: 카드 3~7개. 서버가 그보다 많이 주면 앞에서 7개만 쓴다
   Widget _buildLeavePicks(AsyncValue<List<Map<String, dynamic>>> regions) {
     final picks = (regions.value ?? const <Map<String, dynamic>>[])
-        .take(_maxLeavePicks)
+        .take(homeLeavePickMax)
         .toList();
     // 3개도 못 채우면 섹션째 감춘다 — 한두 장만 놓인 가로 목록은 비어 보인다
     if (regions.hasValue && picks.length < _minLeavePicks) {

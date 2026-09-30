@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:offway/core/network/image_cache.dart';
 import 'package:offway/core/theme/app_theme.dart';
+import 'package:offway/core/widgets/curated_link_section.dart';
 import 'package:offway/features/auth/application/current_user_provider.dart';
 import 'package:offway/features/course/application/pending_trip_provider.dart';
 import 'package:offway/features/home/application/home_providers.dart';
@@ -154,8 +155,9 @@ void main() {
     await tester.pump();
     await tester.pump();
 
+    // 첫 화면 5장, 그다음 '이번 연차엔' 지역 카드 중 아직 안 받은 6·7
     expect(prefetched, [
-      for (var i = 1; i <= 5; i++) 'https://example.com/$i.jpg',
+      for (var i = 1; i <= 7; i++) 'https://example.com/$i.jpg',
     ]);
   });
 
@@ -191,7 +193,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(prefetched, hasLength(5));
+    expect(prefetched, hasLength(7)); // 첫 화면 5 + 아래 섹션 2
     // 게스트 값이 홈 데이터로 남지 않는다 — 로그인하면 제 계정으로 새로 받는다
     expect(container.exists(homeSnapshotProvider), isFalse);
   });
@@ -242,8 +244,94 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(prefetched, hasLength(5));
+    expect(prefetched, hasLength(7)); // 첫 화면 5 + 아래 섹션 2
     expect(tester.takeException(), isNull);
+  });
+
+  group('첫 화면 아래 섹션 사진', () {
+    // 처음 쓰는 사람이 스크롤을 내리면 '이번 연차엔 여기 어때요?' 와
+    // '연차 쓰기 전, 확인해보세요' 사진이 비어 있다가 떴다
+    final snapshot = HomeSnapshot(
+      user: const {},
+      regions: regions(9),
+      places: [
+        for (var i = 1; i <= 6; i++)
+          {
+            'id': 'p$i',
+            'name': '장소$i',
+            'kind': 'SIGHT',
+            // 첫 화면 줄은 한 줄 소개가 있는 장소만 올린다
+            'description': '소개',
+            'imageUrl': 'https://example.com/p$i.jpg',
+          },
+      ],
+      curatedLinks: const [
+        CuratedLink(
+          title: '링크1',
+          chipText: '칩',
+          linkUrl: 'https://example.com/a',
+          thumbnailUrl: 'https://example.com/l1.jpg',
+        ),
+        // 사진 없는 링크는 건너뛴다
+        CuratedLink(
+          title: '링크2',
+          chipText: '칩',
+          linkUrl: 'https://example.com/b',
+        ),
+      ],
+    );
+
+    test('지역 카드는 화면에 놓는 만큼(7장)만, 링크 카드는 사진 있는 것만', () {
+      expect(homeBelowFoldImageUrls(snapshot), [
+        for (var i = 1; i <= homeLeavePickMax; i++)
+          'https://example.com/$i.jpg',
+        'https://example.com/l1.jpg',
+      ]);
+    });
+
+    testWidgets('첫 화면 사진을 다 받은 **뒤에** 받는다 — 대역폭을 나누지 않게', (tester) async {
+      final gate = Completer<void>();
+      final prefetched = <String>[];
+      final container = ProviderContainer(
+        overrides: [
+          homeSnapshotProvider.overrideWith((ref) async => snapshot),
+          imagePrefetcherProvider.overrideWithValue((url) {
+            prefetched.add(url);
+            // 첫 화면(장소) 사진만 붙잡는다
+            return url.contains('/p') ? gate.future : Future.value();
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Consumer(
+              builder: (context, ref, _) => TextButton(
+                onPressed: () => prefetchHomeFirstImages(ref),
+                child: const Text('시작'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('시작'));
+      await tester.pump();
+      await tester.pump();
+
+      // 첫 화면 사진을 받는 동안에는 아래 섹션을 부르지 않는다
+      expect(prefetched, [
+        for (var i = 1; i <= 5; i++) 'https://example.com/p$i.jpg',
+      ]);
+
+      gate.complete();
+      await tester.pump();
+      await tester.pump();
+
+      expect(prefetched.skip(5), homeBelowFoldImageUrls(snapshot));
+    });
   });
 }
 

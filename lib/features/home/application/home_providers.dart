@@ -167,7 +167,41 @@ List<String> homeFirstImageUrls(HomeSnapshot snapshot, {int count = 5}) {
   ];
 }
 
+/// 홈 '이번 연차엔 여기 어때요?' 에 놓는 지역 카드 수의 상한 — 서버가 더
+/// 많이 줘도 앞에서 이만큼만 쓴다(시안: 3~7장)
+const homeLeavePickMax = 7;
+
+/// 첫 화면 **아래** 섹션의 사진 주소 — '이번 연차엔 여기 어때요?' 지역 카드와
+/// '연차 쓰기 전, 확인해보세요' 링크 카드.
+///
+/// 처음 쓰는 사람이 스크롤을 내리면 이 사진들이 비어 있다가 떴다 — 그때 위
+/// 줄의 나머지 사진도 받는 중이라 더 늦었다. 몇 장 안 돼(지역 7 + 링크 몇 장)
+/// 첫 화면 사진과 함께 미리 받아 둔다
+List<String> homeBelowFoldImageUrls(HomeSnapshot snapshot) => [
+  for (final region in snapshot.regions.take(homeLeavePickMax))
+    if (region['imageUrl'] case final String url when url.isNotEmpty) url,
+  for (final link in snapshot.curatedLinks)
+    if (link.thumbnailUrl case final String url when url.isNotEmpty) url,
+];
+
+/// 첫 화면 사진을 받고, **다 받은 뒤에** 아래 섹션 사진을 받는다.
+///
+/// 한꺼번에 넣지 않는다 — 사진 캐시는 동시에 10장까지 받아, 섞어 넣으면 첫
+/// 화면 사진이 아래 섹션과 대역폭을 나눠 늦게 뜬다. 첫 화면 사진이 끝나지
+/// 않으면(실패는 끝난 것으로 친다) 아래 섹션은 홈에서 스크롤할 때 받는다
+Future<void> _prefetchHomeImages(
+  Future<void> Function(String url) prefetch,
+  HomeSnapshot snapshot,
+) async {
+  final first = homeFirstImageUrls(snapshot);
+  await Future.wait(first.map(prefetch));
+  for (final url in homeBelowFoldImageUrls(snapshot)) {
+    if (!first.contains(url)) unawaited(prefetch(url));
+  }
+}
+
 /// 홈 데이터를 받는 대로 **첫 화면 사진**부터 받아 둔다 — 홈이 그려지기 전에.
+/// 그다음 아래 섹션 사진([homeBelowFoldImageUrls])도 받는다.
 ///
 /// 로그인한 채 앱을 켜면 스플래시 동안(`OffwayApp`), 방금 로그인해 홈으로
 /// 가면 로그인 직후(`LoginScreen`) 부른다. 홈 데이터도 이때 요청이 나간다 —
@@ -179,15 +213,15 @@ void prefetchHomeFirstImages(WidgetRef ref) {
   // 미리 받기가 통째로 빠졌다
   final prefetch = ref.read(imagePrefetcherProvider);
   unawaited(
-    ref.read(homeSnapshotProvider.future).then((snapshot) {
-      for (final url in homeFirstImageUrls(snapshot)) {
-        unawaited(prefetch(url));
-      }
-    }, onError: (_) {}),
+    ref
+        .read(homeSnapshotProvider.future)
+        .then((snapshot) => _prefetchHomeImages(prefetch, snapshot))
+        .catchError((_) {}),
   );
 }
 
 /// **로그인 전에** 홈 첫 화면 사진을 받아 둔다 — 처음 쓰는 사람을 위해.
+/// 그다음 아래 섹션 사진([homeBelowFoldImageUrls])도 받는다.
 ///
 /// 처음 설치한 사람은 스플래시 → 온보딩 소개 → 소셜 로그인 → 연차 입력을
 /// 거쳐 홈에 온다. 추천 여행지 사진은 누구에게나 같아 그 사이에 받아 둘 수
@@ -200,10 +234,10 @@ void prefetchHomeFirstImages(WidgetRef ref) {
 void prefetchHomeImagesBeforeLogin(WidgetRef ref) {
   final prefetch = ref.read(imagePrefetcherProvider);
   unawaited(
-    ref.read(homeRepositoryProvider).fetch(beforeLogin: true).then((snapshot) {
-      for (final url in homeFirstImageUrls(snapshot)) {
-        unawaited(prefetch(url));
-      }
-    }, onError: (_) {}),
+    ref
+        .read(homeRepositoryProvider)
+        .fetch(beforeLogin: true)
+        .then((snapshot) => _prefetchHomeImages(prefetch, snapshot))
+        .catchError((_) {}),
   );
 }

@@ -19,7 +19,7 @@ typedef PushToStartTokenListener = void Function(String token);
 /// **UI는 Swift가 그린다.** Flutter 위젯으로는 잠금화면을 그릴 수 없어,
 /// 재료만 네이티브로 넘기고 화면은 Widget Extension(SwiftUI)이 맡는다.
 ///
-/// iOS 16.1+ 에서만 동작한다. 그 아래거나 안드로이드면 **조용히 아무 일도
+/// iOS 16.1+ 에서만 동작한다. 그 아래면 **조용히 아무 일도
 /// 하지 않는다** — 쓰는 쪽이 플랫폼을 검사하지 않게 여기서 삼킨다.
 class TripActivityService {
   TripActivityService({
@@ -40,7 +40,7 @@ class TripActivityService {
 
   /// 이 기기에서 Live Activity 를 띄울 수 있는가.
   ///
-  /// iOS 16.1 미만·안드로이드·사용자가 설정에서 껐을 때 모두 거짓이다.
+  /// iOS 16.1 미만·사용자가 설정에서 껐을 때 모두 거짓이다.
   /// 판정은 네이티브가 한다 — `ActivityAuthorizationInfo` 를 Dart 에서
   /// 볼 수 없다
   Future<bool> isAvailable() async {

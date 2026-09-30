@@ -19,9 +19,9 @@ final deviceIdStorageProvider = Provider<DeviceIdStorage>(
 /// 지우면 같은 기기가 매번 새 기기로 보여 서버의 표가 늘어나기만 한다.
 /// 그래서 토큰 저장소([TokenStorage])와 따로 둔다.
 ///
-/// **`identifierForVendor` 를 쓰지 않는다.** 그 값은 네이티브를 거쳐야 하고
-/// 안드로이드에는 없다. 우리가 만든 값을 Keychain 에 두면 플랫폼과 무관하게
-/// 같은 규칙이고, 앱을 지웠다 다시 깔아도 Keychain 이 남아 같은 기기로 이어진다
+/// **`identifierForVendor` 를 쓰지 않는다.** 그 값은 네이티브를 거쳐야 하고,
+/// 앱을 지웠다 다시 깔면 바뀐다. 우리가 만든 값을 Keychain 에 두면 Dart 만으로
+/// 끝나고, 앱을 지웠다 다시 깔아도 Keychain 이 남아 같은 기기로 이어진다
 /// (그때 토큰은 새로 발급되므로 서버가 보기에 "같은 기기의 새 토큰" 이다).
 class DeviceIdStorage {
   DeviceIdStorage(this._storage);

@@ -171,7 +171,7 @@ class TripActivityController with WidgetsBindingObserver {
   Future<void> sync({DateTime? now}) async {
     final service = _ref.read(tripActivityServiceProvider);
     if (_stopped) return;
-    // 위젯도 카드도 못 그리는 기기(iOS 16.1 미만·안드로이드)면 코스를 읽지
+    // 위젯도 카드도 못 그리는 기기(iOS 16.1 미만)면 코스를 읽지
     // 않는다 — 읽어도 쓸 데가 없다
     final (widgetOk, liveOk) = await (
       service.isWidgetAvailable(),

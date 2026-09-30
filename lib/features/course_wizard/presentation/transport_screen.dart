@@ -6,7 +6,7 @@ import '../../../core/router/app_router.dart';
 import '../application/course_wizard_provider.dart';
 import 'widgets/wizard_choice_step.dart';
 
-/// O-05 · 이동수단 (STEP 3/4)
+/// O-05 · 이동수단 (STEP 4/5)
 class TransportScreen extends ConsumerWidget {
   const TransportScreen({super.key});
 

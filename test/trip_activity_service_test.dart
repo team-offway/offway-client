@@ -124,7 +124,7 @@ void main() {
   });
 
   test('안 되는 플랫폼에서는 채널을 아예 때리지 않는다', () async {
-    // 안드로이드·iOS 16.1 미만에서는 네이티브가 없다. 불러 보고 실패를
+    // iOS 16.1 미만에서는 네이티브가 없다. 불러 보고 실패를
     // 삼키는 게 아니라 **가기 전에 멈춘다**
     calls = [];
     const channel = MethodChannel(TripActivityService.channelName);

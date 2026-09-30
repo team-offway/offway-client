@@ -7,7 +7,7 @@ import '../application/course_wizard_provider.dart';
 import '../application/wizard_recommend_provider.dart';
 import 'widgets/wizard_choice_step.dart';
 
-/// O-06 · 일정 밀도 (STEP 4/4)
+/// O-06 · 일정 밀도 (STEP 5/5)
 class DensityScreen extends ConsumerWidget {
   const DensityScreen({super.key});
 

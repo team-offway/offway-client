@@ -217,7 +217,11 @@ class RegionDetailScreen extends ConsumerWidget {
         // **혜택이 있는 지역에만 뜬다.** 예전에는 이 자리에 큐레이션 링크
         // (대한민국 구석구석·국가유산포털)를 그렸는데, 그 둘은 모든 지역에
         // 똑같이 붙는 고정 링크라 혜택이 없는 지역에서도 혜택이 있다고
-        // 말했다. 시안(18761:72093)이 여기에 두는 것은 혜택 카드 하나다
+        // 말했다.
+        //
+        // **그 지역 혜택을 전부 쌓는다.** 시안(18761:72093)은 카드 하나를
+        // 그렸는데, 혜택이 여럿인 지역은 위 뱃지의 '+N' 시트를 열어야만
+        // 나머지가 보였다. 화면 끝의 '누릴 수 있는 혜택' 자리라 다 보여준다
         if (benefit != null) ...[
           const SizedBox(height: 44),
           Padding(
@@ -233,7 +237,12 @@ class RegionDetailScreen extends ConsumerWidget {
                 ),
                 // 시안 실측: 제목 아래 42 — 제목 프레임(26) 다음이 16이다
                 const SizedBox(height: 16),
-                RegionBenefitCard(benefit: benefit),
+                // 대표 하나만 온 응답(`benefit`)이면 그것 하나다
+                for (final (i, item)
+                    in (benefits.isEmpty ? [benefit] : benefits).indexed) ...[
+                  if (i > 0) const SizedBox(height: 12),
+                  RegionBenefitCard(benefit: item),
+                ],
               ],
             ),
           ),

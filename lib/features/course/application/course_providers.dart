@@ -59,7 +59,12 @@ final courseProvider = FutureProvider.autoDispose
       query,
     ) async {
       final draft = ref.read(courseWizardProvider);
-      final availableTime = await ref.watch(availableTimeProvider.future);
+      // **지켜보지 않고 한 번 읽는다.** 코스 화면에 있는 동안 가용시간이 바뀔
+      // 일은 없다. 지켜보면 '담기'·'닫기'가 위저드를 비우는 순간(화면이 아직
+      // 닫히기 전) 가용시간이 다시 계산되며 이 코스도 다시 만들어졌다 — 그때는
+      // 이동수단이 비어 기본값인 **자차로** 한 번 더 생성됐다. '다시 뽑기'도
+      // 같은 이유로 읽기만 한다(`CourseScreen._regenerate`)
+      final availableTime = await ref.read(availableTimeProvider.future);
       return ref
           .read(courseRepositoryProvider)
           .generate(

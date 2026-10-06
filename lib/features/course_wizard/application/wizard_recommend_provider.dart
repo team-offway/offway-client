@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/trip_constants.dart';
 import '../../../core/network/api_envelope.dart';
@@ -21,6 +23,17 @@ final wizardRecommendProvider =
       final transport = ref.watch(
         courseWizardProvider.select((draft) => draft.transportMode),
       );
+      // **이동수단이 비면 묻지 않는다.** 후보 화면은 이동수단을 고른 뒤에만
+      // 열린다 — 비는 것은 화면을 떠나는 순간뿐이다(닫기·담기의 초기화,
+      // '다시 설정하기'). 그때 그대로 물으면 아래 기본값 때문에 **자차로**
+      // 한 번 더 추천을 받았다. 끝나지 않는 Future 로 두면 화면이 닫히며
+      // 함께 버려진다
+      if (transport == null) {
+        return Completer<
+              ({List<Map<String, dynamic>> regions, List<DataSource> sources})
+            >()
+            .future;
+      }
       final origin = ref.watch(
         courseWizardProvider.select((draft) => draft.origin),
       );
@@ -29,7 +42,7 @@ final wizardRecommendProvider =
           .read(regionRecommendRepositoryProvider)
           .recommend(
             originCode: origin?.code,
-            transport: (transport ?? TransportMode.car).serverValue,
+            transport: transport.serverValue,
             maxReachMinutes: availableTime?.maxReachMinutes ?? kMaxReachMinutes,
           );
     });

@@ -41,10 +41,10 @@
 
 별도 레포를 만들 필요는 없다 — Vercel이 모노레포의 하위 폴더를 루트로 지정해 배포한다.
 
-1. [vercel.com](https://vercel.com) → **Add New Project** → `offway-frontend` 선택
+1. [vercel.com](https://vercel.com) → **Add New Project** → `offway-client` 선택 (2026-10 에 `offway-frontend` 에서 이름을 바꿨다)
 2. **Root Directory**: `web/share`
 3. **Framework Preset**: Other (빌드 명령 없음)
-4. **Project Name**: 원하는 이름 (현재 `offway-frontend`)
+4. **Project Name**: 원하는 이름 (현재 `offway-frontend` — 레포 이름을 바꿔도 Vercel 프로젝트 이름은 그대로다)
 5. 도메인은 Settings → Domains 에서 붙인다 — 현재 `offway.cloud`
 6. Deploy
 

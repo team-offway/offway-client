@@ -242,6 +242,29 @@ void main() {
     });
   });
 
+  testWidgets('하단 "누릴 수 있는 혜택"에는 그 지역 혜택을 전부 쌓는다', (tester) async {
+    // 예전에는 대표 하나만 그려, 나머지는 위 뱃지의 '+N' 시트를 열어야 보였다
+    await pump(
+      tester,
+      policyIndex: const {
+        '정선': [
+          RegionBenefit(text: '숙박 할인', policyId: 3),
+          RegionBenefit(text: '여행경비 50% 환급', policyId: 1),
+          RegionBenefit(text: '근로자 휴가비', policyId: 4),
+        ],
+      },
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RegionBenefitCard), findsNWidgets(3));
+    // 순서는 색인 그대로 — 대표가 맨 앞이다
+    final cards = tester
+        .widgetList<RegionBenefitCard>(find.byType(RegionBenefitCard))
+        .map((c) => c.benefit.text)
+        .toList();
+    expect(cards, ['숙박 할인', '여행경비 50% 환급', '근로자 휴가비']);
+  });
+
   testWidgets('혜택이 여럿이면 뱃지 옆에 +1이 붙고, 누르면 고르는 시트가 뜬다', (tester) async {
     // 서버는 대표 하나만 주고, 나머지는 앱이 정책 상세를 모은 색인에서 온다
     await pump(
@@ -267,6 +290,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('정선 · 강원 혜택'), findsOneWidget);
-    expect(find.text('지역사랑 휴가지원(반값여행)'), findsOneWidget);
+    // 시트 안 한 번 + 화면 아래 혜택 카드 한 번 — 하단은 혜택을 전부 쌓는다
+    expect(find.text('지역사랑 휴가지원(반값여행)'), findsNWidgets(2));
   });
 }
